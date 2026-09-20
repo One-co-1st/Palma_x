@@ -1,0 +1,1569 @@
+@import 'tailwindcss';
+
+/* ───────────────────────────────────────────────────────────────────────────
+   PALMA — design tokens
+
+   Ink, Warm Ivory, Stone, Muted Taupe, Deep Olive, Champagne.
+   Champagne is ceremonial: it marks an honour, never a surface.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* ── Core palette ───────────────────────────────────────────────────────
+     Six institutional colours. The names are *roles*, not descriptions:
+     `ivory` is the paper and `ink` is what is printed on it. Under a dark
+     theme the paper is dark and the ink is light — the relationship holds,
+     which is why the whole interface themes from these variables alone. */
+  --color-ink: #161719;
+  --color-ink-soft: #22242a;
+  --color-ink-muted: #3a3d44;
+  --color-ivory: #f4f0e8;
+  --color-ivory-bright: #fbf9f4;
+  --color-stone: #d8d3c9;
+  --color-stone-deep: #c4bdb0;
+  --color-taupe: #aaa397;
+  --color-taupe-deep: #8c8478;
+  --color-olive: #4a5148;
+  --color-olive-bright: #616b5d;
+  --color-champagne: #c9b58a;
+  --color-champagne-deep: #a8946b;
+
+  --font-display:
+    var(--font-palma-display), 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-sans:
+    var(--font-palma-sans), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial,
+    sans-serif;
+  --font-annotation: var(--font-palma-annotation), 'Bradley Hand', 'Segoe Script', cursive;
+
+  --radius-seal: 999px;
+
+  --tracking-institution: 0.24em;
+  --tracking-label: 0.14em;
+
+  /* The house curve. Every transition in PALMA uses it unless it states why. */
+  --ease-ceremonial: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-tactile: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --animate-reveal: reveal 1s var(--ease-ceremonial) both;
+  --animate-rise: rise 0.8s var(--ease-ceremonial) both;
+  --animate-seal: seal 1.4s var(--ease-ceremonial) both;
+  --animate-band: band 0.9s var(--ease-ceremonial) both;
+}
+
+/*
+ * A whole band arriving.
+ *
+ * Half the travel of `rise`, because the distance that reads as considered on
+ * a card reads as the page lurching when the moving object is a full screen
+ * wide. The point is that the reader notices the section has settled, not that
+ * something moved.
+ */
+@keyframes band {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0.65rem, 0) scale(0.998);
+  }
+  68% {
+    opacity: 1;
+    transform: translate3d(0, -0.06rem, 0) scale(1.001);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0) scale(0.992);
+    clip-path: inset(0 0 100% 0);
+    filter: blur(5px);
+  }
+  62% {
+    opacity: 1;
+    transform: translate3d(0, -0.08rem, 0) scale(1.002);
+    clip-path: inset(0 0 -4% 0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(-10% -10% -10% -10%);
+    filter: none;
+  }
+}
+
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0.9rem, 0) scale(0.988);
+    filter: blur(4px);
+  }
+  58% {
+    opacity: 1;
+    transform: translate3d(0, -0.09rem, 0) scale(1.003);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes palma-engrave {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* The crown is struck, not faded: it arrives slightly oversized and settles. */
+@keyframes palma-strike {
+  from {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes seal {
+  from {
+    opacity: 0;
+    transform: scale(0.94) rotate(-6deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer base {
+  /* ── Themes ───────────────────────────────────────────────────────────────
+     Three: Paper (light), Ink (dark) and Archive (a warm, low-contrast reading
+     theme for long sessions in the Journal and the Roll of Honour).
+
+     A theme is a redefinition of the six core colours and nothing else. No
+     component knows which theme is running, and none needs to. */
+  :root,
+  [data-theme='paper'] {
+    color-scheme: light;
+
+    /* ── Category pigments ─────────────────────────────────────────────────
+     Twelve heraldic accents, one per Creator PALMA. This is where the life comes
+     from: a category is not a slug, it is a colour you start to recognise
+     across cards, headers, finalists and the Roll of Honour.
+
+     Chosen as pigments rather than screen colours — oxblood, verdigris,
+     indigo, aubergine — so they sit with ink and ivory instead of shouting
+     over them. None is used as a page background; each is a mark, a rule,
+     a plate or a piece of type. */
+    /* Two tones per pigment, and the distinction matters:
+     the plain token is the *mark* — crests, rules, plates — and carries real
+     chroma so a category is recognisable at a glance across a grid.
+     The `-ink` token is the *type*, darkened until it clears WCAG AA on ivory,
+     because a colour that is legible as a 3px rule is not legible as an 11px
+     label. Never use the mark tone for small text. */
+    --color-laurel: #2f7a4e;
+    --color-laurel-ink: #2a5c3d;
+    --color-oxblood: #a03740;
+    --color-oxblood-ink: #7a2a30;
+    --color-indigo: #31509b;
+    --color-indigo-ink: #29406f;
+    --color-verdigris: #15807a;
+    --color-verdigris-ink: #1a5f5a;
+    --color-aubergine: #6d3590;
+    --color-aubergine-ink: #4f2867;
+    --color-terracotta: #c1521f;
+    --color-terracotta-ink: #8a3b16;
+    --color-slate: #3c5c7d;
+    --color-slate-ink: #2f4a63;
+    --color-amber: #b8831a;
+    --color-amber-ink: #7d5a11;
+    --color-damson: #8e2f6b;
+    --color-damson-ink: #6b2250;
+    --color-ultramarine: #4340a8;
+    --color-ultramarine-ink: #36337f;
+    --color-umber: #7d5233;
+    --color-umber-ink: #5e3d26;
+    --color-sage: #5c7a52;
+    --color-sage-ink: #465c3e;
+
+    /* Chart colours.
+
+       Separate tokens from the pigments, because a chart asks a different
+       question of a colour than a card does. Two series are validated as a
+       categorical pair in *both* themes — all-pairs, under simulated
+       protanopia and deuteranopia — and a third exists but is only clean on
+       ivory, so any chart reaching for it also carries direct labels. Beyond
+       three series PALMA facets rather than inventing a hue.
+
+       The ordinal ramp is one hue, light to dark, for things that have an
+       order: a funnel, a tier, a stage. Never a rainbow. */
+    --palma-chart-1: #a03740;
+    --palma-chart-2: #31509b;
+    --palma-chart-3: #b8831a;
+
+    --palma-ramp-1: #a3ad9d;
+    --palma-ramp-2: #8c9787;
+    --palma-ramp-3: #667060;
+    --palma-ramp-4: #4a5148;
+
+    /* The chart's own furniture: recessive, never competing with the data. */
+    --palma-grid: #d8d3c9;
+    --palma-axis: #aaa397;
+  }
+
+  /* Inverted panels.
+
+     Every dark section on the site already carries `.on-ink`, so a theme can
+     redefine the paper/ink relationship *inside* those panels alone. That one
+     hook is why the header, hero, winner reveal and portals all re-theme
+     correctly without a single component changing: under Ink they become a
+     deeper panel with light type rather than a light slab in the middle of a
+     dark page. */
+  [data-theme='ink'] .on-ink {
+    --color-ink: #0c0d11;
+    --color-ink-soft: #14161b;
+    --color-ivory: #f2eee6;
+    --color-ivory-bright: #fbf9f4;
+    --color-stone: #23252c;
+    --color-stone-deep: #31343d;
+  }
+
+  [data-theme='archive'] .on-ink {
+    --color-ink: #241e15;
+    --color-ink-soft: #322a1e;
+    --color-ivory: #efe7d7;
+    --color-ivory-bright: #f6f0e3;
+  }
+
+  [data-theme='ink'] {
+    color-scheme: dark;
+
+    /* The paper darkens; the ink lightens. Both keep their warmth — a cold
+       grey dark mode would throw away the whole identity. */
+    --color-ivory: #14151a;
+    --color-ivory-bright: #1b1d23;
+    --color-ink: #f2eee6;
+    --color-ink-soft: #e4dfd4;
+    --color-ink-muted: #cdc7ba;
+    --color-stone: #2a2d35;
+    --color-stone-deep: #383c46;
+    --color-taupe: #7d7768;
+    --color-taupe-deep: #9d9686;
+    --color-olive: #94a78f;
+    --color-olive-bright: #adbda8;
+    --color-champagne: #e0c89a;
+    --color-champagne-deep: #c9b58a;
+
+    /* Pigments lift, because a dark ground eats saturation. Here the type
+       tone is *lighter* than the mark, for the same contrast reason inverted. */
+    --color-laurel: #5fae7e;
+    --color-laurel-ink: #8fcaa4;
+    --color-oxblood: #d1727a;
+    --color-oxblood-ink: #e3969b;
+    --color-indigo: #7f9ae0;
+    --color-indigo-ink: #a3b7ea;
+    --color-verdigris: #3fb3aa;
+    --color-verdigris-ink: #7fcfc8;
+    --color-aubergine: #ac7ccb;
+    --color-aubergine-ink: #c4a0da;
+    --color-terracotta: #e08350;
+    --color-terracotta-ink: #eda98a;
+    --color-slate: #7fa3c9;
+    --color-slate-ink: #a4bcd8;
+    --color-amber: #dcae4a;
+    --color-amber-ink: #e8c67e;
+    --color-damson: #ce7fae;
+    --color-damson-ink: #dda3c5;
+    --color-ultramarine: #8c89dd;
+    --color-ultramarine-ink: #aeabe8;
+    --color-umber: #c2906a;
+    --color-umber-ink: #d4ad90;
+    --color-sage: #9dba92;
+    --color-sage-ink: #b8cfae;
+
+    /* Chart steps for ink. Not a flip of the light ones — chosen against this
+       surface and re-validated on it, which is why indigo sits darker here
+       than the pigment it is named for. */
+    --palma-chart-1: #d1727a;
+    --palma-chart-2: #6f8ace;
+    --palma-chart-3: #dcae4a;
+
+    --palma-ramp-1: #5d6858;
+    --palma-ramp-2: #7c886f;
+    --palma-ramp-3: #9aa78d;
+    --palma-ramp-4: #b8c4ab;
+
+    --palma-grid: #2c2e31;
+    --palma-axis: #6f6a62;
+  }
+
+  [data-theme='archive'] {
+    color-scheme: light;
+
+    /* Aged paper. Lower contrast on purpose: this is the theme for reading
+       a long Journal piece or a twenty-year Roll of Honour. */
+    --color-ivory: #efe7d7;
+    --color-ivory-bright: #f6f0e3;
+    --color-ink: #2b2419;
+    --color-ink-soft: #3a3124;
+    --color-ink-muted: #574a38;
+    --color-stone: #dfd3ba;
+    --color-stone-deep: #cbbb9c;
+    --color-taupe: #a3937a;
+    --color-taupe-deep: #7d6e58;
+    --color-olive: #5a5a3c;
+    --color-champagne: #b99a52;
+    --color-champagne-deep: #9a7d3c;
+  }
+
+  * {
+    border-color: color-mix(in oklab, var(--color-stone) 70%, transparent);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+
+    /* Stop the document rubber-banding past its own top.
+
+       On a phone, pulling down past the top bounces the whole document and
+       uncovers whatever is behind it, which reads as a strip appearing above a
+       header that is meant to be the top of the page. Containing the overscroll
+       keeps the header welded to the edge. Pull-to-refresh goes with it, which
+       on a site with no feed to refresh is no loss. */
+    overscroll-behavior-y: none;
+
+    /* No sideways scroll, ever.
+
+       The engravings, the crop marks and the oversized year figures are all
+       meant to bleed off the right edge — that overhang is the design. What it
+       must never do is become a scrollbar: on a phone a page that slides
+       sideways under the thumb reads as broken, whatever is causing it.
+
+       `clip` rather than `hidden` on purpose. `overflow: hidden` on the root
+       makes the element a scroll container, which silently kills
+       `position: sticky` on descendants and breaks `scroll-behavior: smooth`
+       above. `clip` cuts the overflow without creating that container, so the
+       sticky header and the anchored scrolling both survive. */
+    overflow-x: clip;
+
+    /* The canvas takes the page's colour explicitly rather than inheriting it
+       from body. Anything the browser paints outside the document, including
+       the safe area on a notched phone, is then ivory rather than white. */
+    background-color: var(--color-ivory);
+  }
+
+  /* The paper itself.
+
+     A fixed, very low-opacity grain over the whole page. It costs one
+     composited layer and no requests — the noise is generated in an inline
+     SVG filter — and it is the difference between a colour and a stock. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* On a dark ground the grain must *add* light, not subtract it. */
+  [data-theme='ink'] body::before {
+    mix-blend-mode: screen;
+    opacity: 0.045;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1,
+      'cv05' 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+
+    /* Both elements, not just the root. A bleed wide enough to matter grows
+       the body box, and clipping only `html` leaves that width in the layout
+       for the viewport to scroll over. See the note on `html` above. */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-champagne) 45%, transparent);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-olive);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Dark institutional surfaces carry their own focus ring. */
+  .on-ink :focus-visible {
+    outline-color: var(--color-champagne);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  hr {
+    border-color: color-mix(in oklab, var(--color-stone) 80%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    /* Anything that hides content until it is approached must simply be
+       present. A reader who asked for less motion still gets the metadata. */
+    .palma-card-surface,
+    .palma-card-rule,
+    .palma-link::after {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
+
+@layer components {
+  /* ─────────────────────────────────────────────────────────────────────────
+     PALMA interaction language
+
+     Behaviours that appear hundreds of times live here as classes, not as
+     components: a rule that draws, a label that responds, an image that pushes
+     in. Defined once so a card, a row and a nav item are visibly related, and
+     so none of it costs hydration.
+
+     Every behaviour is wrapped in `motion-safe:`-equivalent guards through the
+     global reduced-motion rule at the foot of the base layer.
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* A link whose underline travels in from the leading edge. The default
+     behaviour for any editorial link that is not a button. */
+  .palma-link {
+    position: relative;
+    display: inline-block;
+    transition: color 220ms var(--ease-ceremonial);
+  }
+
+  .palma-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.15em;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.55;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 380ms var(--ease-ceremonial);
+  }
+
+  .palma-link:hover::after,
+  .palma-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Leaving: the rule retreats to the *trailing* edge rather than collapsing
+     back the way it came, so the gesture reads as completed rather than undone. */
+  .palma-link:not(:hover):not(:focus-visible)::after {
+    transform-origin: right;
+  }
+
+  /* An institutional label that acknowledges the cursor: the tracking opens a
+     fraction and the rule beneath it draws. Used on nav items and metadata. */
+  .palma-label-interactive {
+    transition:
+      color 220ms var(--ease-ceremonial),
+      letter-spacing 380ms var(--ease-ceremonial);
+  }
+
+  .palma-label-interactive:hover,
+  .palma-label-interactive:focus-visible {
+    letter-spacing: 0.18em;
+  }
+
+  /* ── Pigment surfaces ───────────────────────────────────────────────────
+     A container carrying `--palma-pigment` paints its marks with it. These are
+     the only places a category colour is allowed to appear: a rule, a mark, a
+     plate behind an image, a piece of small type. Never a page background. */
+
+  .palma-pigment-rule {
+    background: var(--palma-pigment, var(--color-olive));
+  }
+
+  /* Type always uses the darkened (or, on ink, lightened) tone. */
+  .palma-pigment-text {
+    color: var(--palma-pigment-ink, var(--color-olive));
+  }
+
+  /* A title that takes its category's colour on approach. */
+  .palma-pigment-title {
+    transition: color 220ms var(--ease-ceremonial);
+  }
+
+  .group\/card:hover .palma-pigment-title,
+  .group\/card:focus-visible .palma-pigment-title,
+  .group\/card:focus-within .palma-pigment-title {
+    color: var(--palma-pigment-ink, var(--color-olive));
+  }
+
+  .palma-pigment-border {
+    border-color: color-mix(in oklab, var(--palma-pigment, var(--color-olive)) 55%, transparent);
+  }
+
+  /* A wash behind an editorial image: enough to tint the plate, never enough
+     to fight the photograph on top of it. */
+  .palma-pigment-wash {
+    background:
+      linear-gradient(
+        160deg,
+        color-mix(in oklab, var(--palma-pigment, var(--color-olive)) 22%, transparent),
+        transparent 62%
+      ),
+      var(--color-stone);
+  }
+
+  /* The card's crest: the category's signature on it. Holds full pigment
+     across the first third, then falls away — a printed rule, not a gradient
+     bar. It has to be strong enough to be learned at a glance. */
+  .palma-pigment-crest {
+    background: linear-gradient(
+      to right,
+      var(--palma-pigment, var(--color-olive)) 0%,
+      var(--palma-pigment, var(--color-olive)) 34%,
+      color-mix(in oklab, var(--palma-pigment, var(--color-olive)) 45%, transparent) 72%,
+      color-mix(in oklab, var(--palma-pigment, var(--color-olive)) 10%, transparent) 100%
+    );
+  }
+
+  /* A breath of the pigment into the card itself, from the crest downward.
+     Barely perceptible alone; unmistakable across a grid of eight. */
+  .palma-pigment-field {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--palma-pigment, var(--color-olive)) 9%, transparent),
+      transparent 42%
+    );
+  }
+
+  /* ── Masthead furniture ─────────────────────────────────────────────────
+     Print apparatus, borrowed honestly: crop marks, a folio rule, a divided
+     meta rail. These are the details that make a page header read as a
+     *masthead* rather than a coloured rectangle with a heading in it. */
+
+  .palma-crop {
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .palma-crop::before,
+  .palma-crop::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+  }
+
+  .palma-crop::before {
+    inset-inline-start: 0;
+    top: 0;
+    width: 100%;
+    height: 1px;
+  }
+
+  .palma-crop::after {
+    inset-inline-start: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+  }
+
+  .palma-crop[data-corner='tr'] {
+    transform: scaleX(-1);
+  }
+  .palma-crop[data-corner='bl'] {
+    transform: scaleY(-1);
+  }
+  .palma-crop[data-corner='br'] {
+    transform: scale(-1);
+  }
+
+  /* The divided meta rail beneath a masthead. */
+  .palma-rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .palma-rail > * + *::before {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 0.85em;
+    margin-inline: 1.15rem;
+    vertical-align: -0.1em;
+    background: currentColor;
+    opacity: 0.28;
+  }
+
+  /* Wrapped rail items would carry their divider onto the start of the next
+     line, which reads as a stray mark. Below the fold-out width the rail
+     simply stacks. */
+  @media (max-width: 640px) {
+    .palma-rail {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .palma-rail > * + *::before {
+      content: none;
+    }
+  }
+
+  /* A very large, very quiet numeral behind a masthead plate — the season
+     year, the class, the count. Institutional, not decorative. */
+  .palma-figure {
+    font-family: var(--font-display);
+    line-height: 0.78;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Hover vocabulary ───────────────────────────────────────────────────
+     The behaviours that appear dozens of times each. Defined once so a table
+     row, an archive row and a filter chip are visibly the same family. */
+
+  /* A row in a list or table. The pigment rule travels, the ground warms, the
+     leading type shifts a fraction toward its destination. */
+  .palma-row {
+    position: relative;
+    transition: background-color 260ms var(--ease-ceremonial);
+  }
+
+  .palma-row::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--palma-pigment, var(--color-olive));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 520ms var(--ease-ceremonial);
+  }
+
+  .palma-row:hover::after,
+  .palma-row:focus-visible::after,
+  .palma-row:focus-within::after {
+    transform: scaleX(1);
+  }
+
+  .palma-row-lead {
+    display: inline-block;
+    transition:
+      transform 380ms var(--ease-ceremonial),
+      translate 380ms var(--ease-ceremonial);
+  }
+
+  .palma-row:hover .palma-row-lead,
+  .palma-row:focus-visible .palma-row-lead,
+  .palma-row:focus-within .palma-row-lead {
+    transform: translateX(0.4rem);
+  }
+
+  /* A portrait, mounted.
+
+     The plate is a champagne hairline offset behind the image and a rule
+     beneath it, so a square photograph reads as something hung on a wall
+     rather than dropped into a layout. Both are drawn with pseudo-elements on
+     a wrapper, which keeps `EditorialImage` unchanged — it is used in a dozen
+     places that should not inherit ceremony. */
+  .palma-portrait-plate {
+    position: relative;
+  }
+
+  .palma-portrait-plate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    translate: 0.7rem 0.7rem;
+    border: 1px solid color-mix(in oklab, var(--color-champagne) 55%, transparent);
+    transition:
+      translate 620ms var(--ease-ceremonial),
+      border-color 620ms var(--ease-ceremonial);
+    pointer-events: none;
+  }
+
+  .palma-portrait-plate:hover::before {
+    translate: 0.35rem 0.35rem;
+    border-color: color-mix(in oklab, var(--color-champagne) 85%, transparent);
+  }
+
+  /* The rule beneath: short, offset left, the same gesture the mastheads use. */
+  .palma-portrait-rule {
+    position: absolute;
+    bottom: -1.35rem;
+    left: 0;
+    height: 1px;
+    width: 3.5rem;
+    background: var(--color-champagne);
+    opacity: 0.8;
+  }
+
+  /* A single soft wash behind the plate. One light source, off to the left,
+     so the dark band is not a flat rectangle. */
+  .palma-plate-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      42rem 26rem at 14% 42%,
+      color-mix(in oklab, var(--color-champagne) 13%, transparent),
+      transparent 68%
+    );
+  }
+
+  /* Roman numerals in the legal register.
+
+     Old-style figures would be wrong here: a numeral is a citation, not a
+     number you do arithmetic with, so it is set in the display face, spaced
+     like a label, and kept out of the text colour so it never competes with
+     the clause it marks. */
+  .palma-numeral {
+    font-family: var(--font-display), Georgia, serif;
+    font-variant-numeric: normal;
+    letter-spacing: 0.12em;
+    font-feature-settings: 'liga' 0;
+  }
+
+  /* The rule under a clause heading draws itself in when the clause is
+     reached, so a long document reads as written rather than dumped. It is
+     decorative: `animation-timeline` is ignored where unsupported, and the
+     rule is simply there at full width. */
+  .palma-clause-rule {
+    height: 1px;
+    width: min(100%, 28rem);
+    background: linear-gradient(
+      to right,
+      var(--color-champagne-deep),
+      var(--color-stone-deep) 45%,
+      transparent
+    );
+    transform-origin: left center;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .palma-clause-rule {
+        animation: clause-rule linear both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 22%;
+      }
+    }
+  }
+
+  @keyframes clause-rule {
+    from {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+
+  /* A filter chip. The fill sweeps in from the leading edge rather than
+     switching colour, so choosing a filter feels like a decision landing. */
+  .palma-chip {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      color 220ms var(--ease-ceremonial),
+      border-color 220ms var(--ease-ceremonial);
+  }
+
+  .palma-chip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 320ms var(--ease-ceremonial);
+  }
+
+  .palma-chip:hover:not([data-active='true'])::before,
+  .palma-chip:focus-visible:not([data-active='true'])::before {
+    transform: scaleX(1);
+  }
+
+  .palma-chip:hover:not([data-active='true']),
+  .palma-chip:focus-visible:not([data-active='true']) {
+    color: var(--color-ivory);
+    border-color: var(--color-ink);
+  }
+
+  /* A footer trunk.
+
+     Collapsed on a phone so the footer is a handful of headings rather than a
+     long scroll, and forced open from `sm` up, where there is room for the
+     whole tree and hiding it behind a click would only cost a reader time.
+
+     The open state is undone rather than simulated: the UA hides a closed
+     details' children, so `sm` overrides that display rule directly and turns
+     the summary back into plain type. Nothing here depends on JavaScript. */
+  .palma-branch > summary::-webkit-details-marker,
+  .palma-branch > summary::marker {
+    display: none;
+    content: '';
+  }
+
+  @media (min-width: 40rem) {
+    .palma-branch > summary {
+      pointer-events: none;
+    }
+
+    /* Two mechanisms, because browsers disagree about how a closed details
+       hides its content. Chrome uses `content-visibility` on the
+       `::details-content` pseudo-element; older engines hide the light-DOM
+       children with `display`. Undo both and the branch is open on desktop
+       whatever the `open` attribute says. */
+    .palma-branch::details-content {
+      content-visibility: visible;
+      block-size: auto;
+    }
+
+    .palma-branch:not([open]) > *:not(summary) {
+      display: block;
+      content-visibility: visible;
+    }
+  }
+
+  /* The mark, engraved rather than displayed.
+
+     Every stroke carries `pathLength="100"`, so one dash rule covers strokes of
+     wildly different real lengths and they all draw at the same rate. The spine
+     goes down first, the fronds follow in pairs outward from it, and the crown
+     is struck last — which is the order somebody cutting this by hand would
+     work in, and the reason it reads as engraving rather than as a loading
+     spinner.
+
+     Under `prefers-reduced-motion` the whole thing is simply the finished mark:
+     no dash, no offset, nothing to wait for. */
+  .palma-engrave path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: palma-engrave 700ms var(--ease-ceremonial) forwards;
+  }
+
+  /* The spine first, on its own, and quicker than the rest: it is one cut.
+     The timings are chosen so the last frond lands at 1360ms and the crown is
+     struck at 1400ms — the crown must be the last mark made, and an earlier
+     version had it arriving while two fronds were still drawing. */
+  .palma-engrave path:nth-of-type(1) {
+    animation-duration: 620ms;
+  }
+  .palma-engrave path:nth-of-type(2),
+  .palma-engrave path:nth-of-type(3) {
+    animation-delay: 300ms;
+  }
+  .palma-engrave path:nth-of-type(4),
+  .palma-engrave path:nth-of-type(5) {
+    animation-delay: 420ms;
+  }
+  .palma-engrave path:nth-of-type(6),
+  .palma-engrave path:nth-of-type(7) {
+    animation-delay: 540ms;
+  }
+  .palma-engrave path:nth-of-type(8),
+  .palma-engrave path:nth-of-type(9) {
+    animation-delay: 660ms;
+  }
+
+  .palma-engrave [data-crown] {
+    opacity: 0;
+    animation: palma-strike 480ms var(--ease-tactile) 1400ms forwards;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .palma-engrave path,
+    .palma-engrave [data-crown] {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+      opacity: 1;
+      animation: none;
+    }
+  }
+
+  /* A quiet link — footers, legal, secondary navigation. The mark appears
+     before the text moves, so the list never reflows. */
+  .palma-quiet-link {
+    position: relative;
+    display: inline-block;
+    padding-inline-start: 0;
+    transition:
+      color 220ms var(--ease-ceremonial),
+      padding-inline-start 320ms var(--ease-ceremonial);
+  }
+
+  .palma-quiet-link::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    width: 0.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left;
+    transition:
+      opacity 220ms var(--ease-ceremonial),
+      transform 320ms var(--ease-ceremonial);
+  }
+
+  .palma-quiet-link:hover,
+  .palma-quiet-link:focus-visible {
+    padding-inline-start: 0.85rem;
+  }
+
+  .palma-quiet-link:hover::before,
+  .palma-quiet-link:focus-visible::before {
+    opacity: 0.75;
+    transform: translateY(-50%) scaleX(1);
+  }
+
+  /* A stat that acknowledges the cursor: the figure lifts a hair and its rule
+     draws. Used across portals and the About page. */
+  .palma-stat {
+    position: relative;
+    transition: transform 320ms var(--ease-ceremonial);
+  }
+
+  .palma-stat::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: -0.6rem;
+    width: 2.5rem;
+    height: 2px;
+    background: var(--palma-pigment, var(--color-champagne-deep));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms var(--ease-ceremonial);
+  }
+
+  .palma-stat:hover {
+    transform: translateY(-2px);
+  }
+
+  .palma-stat:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* A badge that firms up when the thing it labels is approached. */
+  .palma-badge-live {
+    transition:
+      border-color 260ms var(--ease-ceremonial),
+      background-color 260ms var(--ease-ceremonial),
+      letter-spacing 380ms var(--ease-ceremonial);
+  }
+
+  .group\/card:hover .palma-badge-live {
+    letter-spacing: 0.17em;
+    border-color: color-mix(in oklab, currentColor 55%, transparent);
+  }
+
+  /* The seal, when it is interactive: a slow quarter-degree settle. */
+  .palma-seal-live {
+    transition:
+      transform 900ms var(--ease-ceremonial),
+      opacity 420ms var(--ease-ceremonial);
+  }
+
+  .palma-seal-live:hover {
+    transform: rotate(-3deg) scale(1.015);
+  }
+
+  /* Form fields: the label lifts into the institution's accent and a rule
+     draws beneath the control on focus. */
+  .palma-field-shell:focus-within .palma-field-label {
+    color: var(--color-olive);
+  }
+
+  .palma-field-label {
+    transition: color 220ms var(--ease-ceremonial);
+  }
+
+  /* The editorial card.
+
+     Nothing floats. The image pushes in a fraction, the border firms, the
+     title shifts toward its arrow, and secondary metadata surfaces — all at
+     the same easing, so it reads as one gesture rather than four. */
+  .palma-card-media {
+    overflow: hidden;
+  }
+
+  .palma-card-media > * {
+    transition: transform 640ms var(--ease-ceremonial);
+  }
+
+  .group\/card:hover .palma-card-media > *,
+  .group\/card:focus-visible .palma-card-media > * {
+    transform: scale(1.03);
+  }
+
+  /* Metadata that surfaces on approach without reserving layout space. */
+  .palma-card-surface {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 380ms var(--ease-ceremonial),
+      transform 380ms var(--ease-ceremonial);
+  }
+
+  .group\/card:hover .palma-card-surface,
+  .group\/card:focus-visible .palma-card-surface,
+  .group\/card:focus-within .palma-card-surface {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* A rule that travels the width of a row on approach. */
+  .palma-card-rule {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 640ms var(--ease-ceremonial);
+  }
+
+  .group\/card:hover .palma-card-rule,
+  .group\/card:focus-visible .palma-card-rule,
+  .group\/card:focus-within .palma-card-rule {
+    transform: scaleX(1);
+  }
+
+  /* An arrow that advances. */
+  .palma-advance {
+    transition: transform 220ms var(--ease-ceremonial);
+  }
+
+  .group\/card:hover .palma-advance,
+  .group\/button:hover .palma-advance,
+  .group\/card:focus-visible .palma-advance {
+    transform: translateX(8px);
+  }
+
+  /* ── Illusion layer ─────────────────────────────────────────────────────
+     Outline type that fills with ink, and pointer-driven depth. Both are
+     built so the static state is already correct. */
+
+  /* Both of these hide the glyphs with `-webkit-text-fill-color` rather than
+     with `color`, and the difference is the whole heading.
+
+     `color: transparent` also makes `currentColor` transparent, on the very
+     same element that then asks for `currentColor` to draw its stroke and its
+     gradient. The result computed to
+     `linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0))` over a stroke of
+     the same nothing, so "PALMA Roll of Honour" rendered as an invisible
+     heading that only appeared when selected.
+
+     `-webkit-text-fill-color` empties the glyphs and leaves `color` alone, so
+     `currentColor` is still the real inherited ink and both layers paint. It
+     also means the heading follows the theme: whatever colour the section
+     hands down is what gets drawn, light or dark. */
+  /* Both layers are typeset identically, here rather than at the call site.
+     The ink layer is an <h1>, so the base stylesheet hands it the display
+     face, the heading letter-spacing and `text-wrap: balance`; the outline is
+     a <span> and inherits none of them. Same string, same box, different
+     typesetting, stacked: the heading came out smeared with one layer
+     breaking after "Roll of" and the other after "Roll". Stating the
+     typography on both keeps them locked together whatever tag is passed. */
+  .palma-ink-outline,
+  .palma-ink-fill {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .palma-ink-outline {
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklab, currentColor 45%, transparent);
+  }
+
+  .palma-ink-fill {
+    --palma-fill: 100%;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(
+      to right,
+      currentColor 0%,
+      currentColor var(--palma-fill),
+      transparent var(--palma-fill)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* With no GSAP — reduced motion, or a failed chunk — the ink is simply
+     already there, and the outline underneath is invisible behind it. */
+  @media (prefers-reduced-motion: reduce) {
+    .palma-ink-fill {
+      --palma-fill: 100% !important;
+    }
+  }
+
+  .palma-depth {
+    --palma-depth-x: 0;
+    --palma-depth-y: 0;
+    --palma-depth-strength: 1;
+    perspective: 1200px;
+    transform-style: preserve-3d;
+  }
+
+  .palma-depth-item {
+    --palma-depth-level: 1;
+    transform: translate3d(
+      calc(var(--palma-depth-x) * var(--palma-depth-level) * var(--palma-depth-strength) * -6px),
+      calc(var(--palma-depth-y) * var(--palma-depth-level) * var(--palma-depth-strength) * -6px),
+      0
+    );
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .palma-depth-item {
+      transform: none;
+    }
+  }
+
+  /* The hand in the margin.
+
+     A single annotation face, used two or three times on the entire site —
+     after a class of winners, beside the Roll of Honour. It is the one place
+     PALMA is allowed to sound like a person rather than an institution, and it
+     only works because everything around it is set straight. */
+  .palma-annotation {
+    font-family: var(--font-annotation);
+    font-size: 1.65rem;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    color: color-mix(in oklab, currentColor 62%, transparent);
+    transform: rotate(-1.4deg);
+    display: inline-block;
+  }
+
+  /* ── THE PALMA ────────────────────────────────────────────────────────
+
+     The institution's highest honour gets three gestures of its own, and no
+     more. An award that arrives surrounded by effects is a product launch. */
+
+  /* A refusal, struck through as it is read.
+
+     "Not popularity" is a stronger sentence when you watch the word being
+     ruled out. The rule draws itself across the term as the term enters the
+     viewport, scrubbed to the scroll rather than fired on a timer, so it
+     tracks the reader instead of racing them.
+
+     Decorative by construction: where `animation-timeline` is unsupported the
+     rule is simply already drawn, which is the same statement without the
+     performance. */
+  .palma-strike {
+    position: relative;
+    display: inline-block;
+  }
+
+  .palma-strike::after {
+    content: '';
+    position: absolute;
+    left: -0.06em;
+    right: -0.06em;
+    top: 54%;
+    height: 2px;
+    background: var(--color-champagne-deep);
+    transform-origin: left center;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .palma-strike::after {
+        animation: palma-strike linear both;
+        animation-timeline: view();
+        animation-range: entry 24% cover 42%;
+      }
+    }
+  }
+
+  @keyframes palma-strike {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* The considerations rail: a hairline that fills from the top as the eight
+     criteria are read, so a long list reads as one argument being made rather
+     than eight bullets. */
+  .palma-rail-fill {
+    background: linear-gradient(
+      to bottom,
+      var(--color-champagne-deep),
+      var(--color-olive) 62%,
+      transparent
+    );
+    transform-origin: top center;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .palma-rail-fill {
+        animation: palma-rail-fill linear both;
+        animation-timeline: view();
+        animation-range: entry 8% cover 78%;
+      }
+    }
+  }
+
+  @keyframes palma-rail-fill {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  /* The wordmark on the honour's own page: letter-spacing that settles as it
+     arrives, so the name appears to be set rather than printed. One element,
+     once per page. */
+  .palma-set-wide {
+    animation: palma-set-wide 1.6s var(--ease-ceremonial) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .palma-set-wide {
+      animation: none;
+    }
+  }
+
+  @keyframes palma-set-wide {
+    from {
+      letter-spacing: 0.02em;
+      opacity: 0;
+    }
+    60% {
+      opacity: 1;
+    }
+    to {
+      letter-spacing: var(--tracking-institution);
+      opacity: 1;
+    }
+  }
+
+  /* ── The threshold ────────────────────────────────────────────────────
+
+     Two ink panels that part from the centreline on arrival. Pure CSS, in the
+     server-rendered markup, so it animates from the first paint rather than
+     waiting for a bundle: the page underneath is complete the whole time and
+     this is a covering that leaves, not a screen that has to finish.
+
+     Everything is transform and opacity, so it runs on the compositor and
+     cannot cause layout. `forwards` leaves it hidden and non-interactive. */
+  .palma-threshold {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    animation: palma-threshold-done 0s linear 660ms forwards;
+  }
+
+  .palma-threshold-leaf {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 51vw;
+    background: var(--color-ink);
+    will-change: transform;
+  }
+
+  .palma-threshold-leaf[data-side='left'] {
+    left: 0;
+    animation: palma-part-left 600ms var(--ease-ceremonial) 60ms both;
+  }
+
+  .palma-threshold-leaf[data-side='right'] {
+    right: 0;
+    animation: palma-part-right 600ms var(--ease-ceremonial) 60ms both;
+  }
+
+  @keyframes palma-part-left {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-100%, 0, 0);
+    }
+  }
+
+  @keyframes palma-part-right {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(100%, 0, 0);
+    }
+  }
+
+  /* The mark holds for a beat while the panels open behind it, then lifts. */
+  @keyframes palma-threshold-done {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  /* Removed outright rather than shortened. A curtain nobody asked for is
+     precisely what this setting is asking not to see. */
+  @media (prefers-reduced-motion: reduce) {
+    .palma-threshold {
+      display: none;
+    }
+  }
+
+  /* The institutional label: small, spaced, quietly authoritative. */
+  .palma-label {
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  /* PaROH is a proper noun with deliberate casing. Labels that carry it use
+     this variant so the archive's name is never flattened to "PAROH". */
+  .palma-label-brand {
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  .palma-wordmark {
+    font-family: var(--font-display);
+    letter-spacing: var(--tracking-institution);
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .palma-rule {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, currentColor 22%, transparent),
+      transparent
+    );
+  }
+
+  /* Editorial measure for long-form Journal copy. */
+  .palma-prose p {
+    margin-bottom: 1.6em;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: color-mix(in oklab, var(--color-ink) 88%, transparent);
+  }
+
+  .palma-prose p:first-of-type::first-letter {
+    float: left;
+    font-family: var(--font-display);
+    font-size: 3.6em;
+    line-height: 0.82;
+    padding-right: 0.08em;
+    padding-top: 0.06em;
+  }
+}
+
+@utility text-balance-display {
+  text-wrap: balance;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────
+   A PALMA button is a stamped thing, not a rectangle with a fill.
+
+   Three moves happen at once on approach, and none of them is a colour
+   change: ink sweeps across from the leading edge behind the label, a thin
+   frame draws itself inside the edge, and the button lifts off the page.
+   Pressing settles it back with the ink held.
+
+   All of it is CSS. A hover state that needs JavaScript costs hydration,
+   breaks :focus-visible, and needs a wrapper element that distorts layout —
+   Motion earns its place on entrances and gestures, not here. */
+.palma-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    translate 220ms var(--ease-ceremonial),
+    color 260ms var(--ease-ceremonial),
+    border-color 260ms var(--ease-ceremonial),
+    background-color 260ms var(--ease-ceremonial),
+    letter-spacing 320ms var(--ease-ceremonial),
+    box-shadow 180ms var(--ease-ceremonial);
+}
+
+/* The ink. Sweeps from the leading edge, behind the label. */
+.palma-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--palma-btn-ink, var(--color-ink));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 460ms var(--ease-ceremonial);
+}
+
+/* The frame. Draws itself inside the edge, like a plate mark. */
+.palma-btn::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid currentColor;
+  opacity: 0;
+  transform: scale(1.035);
+  pointer-events: none;
+  transition:
+    opacity 300ms var(--ease-ceremonial),
+    transform 420ms var(--ease-ceremonial);
+}
+
+/* The label takes a breath. `.palma-label` already sits at 0.14em, so the
+   open value has to clear it to read as movement at all. */
+.palma-btn:hover,
+.palma-btn:focus-visible {
+  letter-spacing: 0.21em;
+}
+
+.palma-btn:hover::before,
+.palma-btn:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.palma-btn:hover::after,
+.palma-btn:focus-visible::after {
+  opacity: 0.35;
+  transform: scale(1);
+}
+
+/* Pressed: settles into the page, ink held. */
+.palma-btn:active {
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.18);
+}
+
+.palma-btn:disabled::before,
+.palma-btn[aria-disabled='true']::before {
+  transform: scaleX(0);
+}
+
+/* An arrow inside a button travels on approach. */
+.palma-btn svg {
+  transition: translate 320ms var(--ease-ceremonial);
+}
+
+.palma-btn:hover svg,
+.palma-btn:focus-visible svg {
+  translate: 0.2rem 0;
+}
+
+/* The seal: a circular, ceremonial button.
+
+   The ring is an outline rather than a pseudo-element, because `.palma-btn`
+   already spends both pseudos — one on the ink, one on the plate mark — and
+   two systems sharing `::before` merge into nonsense. An outline also follows
+   the border radius and can be animated by offset, which is exactly the
+   move: the ring steps back from the face on approach. */
+.palma-seal-btn {
+  outline: 1px dashed color-mix(in oklab, currentColor 35%, transparent);
+  outline-offset: 5px;
+  transition:
+    translate 220ms var(--ease-ceremonial),
+    color 260ms var(--ease-ceremonial),
+    border-color 260ms var(--ease-ceremonial),
+    outline-offset 420ms var(--ease-ceremonial),
+    outline-color 420ms var(--ease-ceremonial),
+    letter-spacing 320ms var(--ease-ceremonial);
+}
+
+.palma-seal-btn:hover,
+.palma-seal-btn:focus-visible {
+  outline-offset: 10px;
+  outline-color: color-mix(in oklab, currentColor 75%, transparent);
+}
+
+/* The ink sweeps across the circle rather than a box behind it. */
+.palma-seal-btn::before {
+  border-radius: 9999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palma-btn,
+  .palma-btn::before,
+  .palma-btn::after,
+  .palma-btn svg,
+  .palma-seal-btn {
+    transition-duration: 1ms;
+  }
+
+  .palma-btn:hover,
+  .palma-btn:focus-visible {
+    letter-spacing: inherit;
+  }
+
+  /* Without motion the ink is simply there on approach rather than swept. */
+  .palma-btn:hover::before,
+  .palma-btn:focus-visible::before {
+    transform: scaleX(1);
+  }
+}

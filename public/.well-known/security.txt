@@ -1,0 +1,116 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  PALMA — The Creator Honours
+#  Security policy and contact — RFC 9116
+#  https://www.rfc-editor.org/rfc/rfc9116
+# ─────────────────────────────────────────────────────────────────────────────
+
+Contact: mailto:security@palmaawards.com
+Contact: https://palmaawards.com/report
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, en-GB
+Canonical: https://palmaawards.com/.well-known/security.txt
+Policy: https://palmaawards.com/legal/terms
+Hiring: https://palmaawards.com/press
+
+# ── What PALMA is ────────────────────────────────────────────────────────────
+#
+# An awards institution and a permanent public record of achievement in the
+# creator industry. It is NOT a content platform, a social network, a
+# marketplace, or a host of adult material. It stores no creator media beyond
+# one reviewed portrait per claimed record.
+#
+# Everything PALMA publishes is intended to be public. Everything else —
+# judging, verification, claims, reports, the audit log — is intended never to
+# be. Most of what follows is about the boundary between the two.
+
+# ── Severity, in PALMA's terms ───────────────────────────────────────────────
+#
+# CRITICAL — the integrity of the record
+#   · Forging or altering a verification record, achievement or honour
+#   · Producing a /verify/<code> page that resolves for an award never conferred
+#   · Conferring, revoking or reordering an honour without the two-administrator
+#     path, or without an audit entry
+#   · Any write to a historical award that leaves no trace
+#
+# CRITICAL — the confidentiality of judging
+#   · Reading judge scores, rationales, deliberations or conflict declarations
+#     without a judging role
+#   · Learning which judge was assigned to which candidacy
+#   · Any route by which a sponsor or commercial role reaches the above
+#
+# CRITICAL — identity and personal data
+#   · Reading another account's Dossier, claim evidence or verification case
+#   · Claiming a creator record you do not control
+#   · Reaching /admin, /portal or /judge without the corresponding role
+#   · Account takeover of any kind, including via password reset or the
+#     email-change flow
+#
+# HIGH
+#   · Nomination manipulation that survives rate limiting, duplicate detection
+#     and email verification
+#   · Reading a pending (unreviewed) portrait, or an unpublished creator record
+#   · Sending mail as PALMA, or injecting content into a list dispatch
+#   · Subscribing or unsubscribing an address you do not control
+#   · Bypassing the suppression list
+#
+# MODERATE
+#   · Stored or reflected XSS on any authenticated surface
+#   · CSRF against any server action
+#   · Enumerating accounts, creators or nominators through timing or error text
+#   · Cache poisoning of a portrait or verification URL
+#
+# LOW / OUT OF SCOPE
+#   · Missing headers with no demonstrated impact
+#   · Rate limiting on unauthenticated read-only pages
+#   · Clickjacking on pages with no state-changing action
+#   · Reports generated solely by automated scanners, with no working exploit
+#   · Social engineering of PALMA staff, and physical attacks
+#   · Denial of service, volumetric testing, and anything degrading the service
+#     for real users
+
+# ── Things that are findings in themselves ───────────────────────────────────
+#
+# PALMA holds NO identity documents, NO biometric data, NO date of birth, and
+# NO raw IP addresses. If you find any of these in our systems, that is a
+# finding regardless of whether you had to break anything to see it — tell us.
+#
+# PALMA holds no location more precise than a country for a creator who has not
+# claimed their record. A city, an address or coordinates on an unclaimed
+# record is likewise a finding in itself. Portrait uploads are re-encoded and
+# stripped of EXIF on receipt; a stored portrait carrying metadata is a bug.
+
+# ── Rules of engagement ──────────────────────────────────────────────────────
+#
+# Please DO
+#   · Test against your own accounts and your own creator record
+#   · Stop at proof of concept — read one record, not the table
+#   · Report promptly, with enough detail to reproduce
+#   · Ask us for an isolated environment; we will provide one
+#
+# Please DO NOT
+#   · Test against live nomination or judging data
+#   · Access any real person's verification case, claim evidence or Dossier
+#   · Modify, delete or exfiltrate data belonging to anyone else
+#   · Run automated scanners against production
+#   · Contact creators, nominators or judges as part of your testing
+#
+# Acting in good faith under these rules, PALMA will not pursue you. We will
+# credit you if you want it, and not if you do not.
+
+# ── What to expect ───────────────────────────────────────────────────────────
+#
+# Acknowledgement within 3 working days.
+# An assessment, with our severity view, within 10 working days.
+# Regular updates until it is closed.
+#
+# PALMA has no bug bounty programme and does not pay for reports. We would
+# rather say so plainly than imply one.
+
+# ── Correspondence ───────────────────────────────────────────────────────────
+#
+# Every address PALMA publishes is read by a person. There is no noreply.
+#
+#   security@palmaawards.com    vulnerabilities, account safety
+#   concerns@palmaawards.com    enforcement, complaints, data protection
+#   concierge@palmaawards.com   accounts, records, claims, everything else
+#   laurels@palmaawards.com     the record itself — honours, seasons

@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Prisma needs a connection string at generate time; the checks below never
+  # open a connection except in the integration job, which runs its own server.
+  DATABASE_URL: postgresql://palma:palma@localhost:5432/palma?schema=public
+  AUTH_SECRET: ci-secret-ci-secret-ci-secret-ci-secret-0123
+  NEXT_PUBLIC_SITE_URL: https://palmaawards.com
+
+jobs:
+  verify:
+    name: Typecheck, lint, format and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Unit tests
+        run: npm test
+
+  integration:
+    name: Awards engine against PostgreSQL
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: palma
+          POSTGRES_PASSWORD: palma
+          POSTGRES_DB: palma
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma db push
+
+      - name: Seed the reference dataset
+        run: npm run db:seed
+
+      - name: Integration tests
+        run: npm run test:integration
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: palma
+          POSTGRES_PASSWORD: palma
+          POSTGRES_DB: palma
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The build reads the season, categories, creators and Journal from
+      # PostgreSQL to generate static pages, so the database is not optional
+      # here either.
+      - run: npx prisma db push
+      - run: npm run db:seed
+
+      - name: Production build
+        run: npm run build

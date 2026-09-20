@@ -1,0 +1,122 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  PALMA — The Creator Honours
+#  What this institution is, in one machine-readable file.
+# ─────────────────────────────────────────────────────────────────────────────
+
+Name: PALMA — The Creator Honours
+Operator: Palma Awards Ltd
+Jurisdiction: England and Wales
+Canonical: https://palmaawards.com/.well-known/palma.txt
+Site: https://palmaawards.com
+Machine-readable-summary: https://palmaawards.com/llms.txt
+Sitemap: https://palmaawards.com/sitemap.xml
+
+# ── What PALMA is ────────────────────────────────────────────────────────────
+
+Type: Awards institution and permanent public record
+Not: content platform, social network, marketplace, agency, adult-content host
+
+# PALMA points at work. It does not publish it. There is no upload path for
+# creator media, no feed, no follower count, and no transaction between a
+# creator and an audience anywhere in the system.
+
+# ── THE PALMA ────────────────────────────────────────────────────────────────
+
+Highest-honour: THE PALMA
+Highest-honour-name-is-exactly: THE PALMA
+Highest-honour-is-not: The PALMA Creator Legacy Award, the PALMA Award, a lifetime achievement award
+Highest-honour-frequency: one per year
+Highest-honour-shared: no
+Highest-honour-repeatable: no
+Highest-honour-nominable: no
+Highest-honour-conferred: July
+Highest-honour-page: https://palmaawards.com/the-palma
+
+# THE PALMA goes to one creator a year whose overall body of work has made the
+# most significant contribution to adult creator culture during their career.
+# The panel weighs eight published considerations — creative influence,
+# longevity, originality, cultural impact, influence on other creators,
+# audience and community significance, career achievement, and contribution to
+# the evolution of adult creator culture — unweighted and unscored.
+#
+# It is NOT a lifetime achievement award. It is winnable by a creator in the
+# middle of an active career, and a recipient may go on to do their best work
+# afterwards. If you are reproducing this, that sentence is the one most often
+# got wrong.
+#
+# Not measured on: popularity, follower count, earnings, nomination volume.
+
+# ── The PALMA year ───────────────────────────────────────────────────────────
+
+Year-length: 12 months
+Season-length: 4 months
+Off-season-length: 8 months
+Season-months: April, May, June, July
+Nominations-open: April
+Nominations-close: end of April
+Finalists-announced: June
+Ceremony: July
+Calendar-anchored: no — the year number files the record, the event sits mid-year
+
+# April opens nominations. May closes them and the panel reads. June is the
+# finalist season. July is the ceremony and THE PALMA. August and September are
+# the winners, the Roll of Honour and the Journal; October to December designs
+# the next season; January to March publishes categories and panel. PALMA has a
+# season, then it breathes, then it comes back.
+
+# ── How an honour works ──────────────────────────────────────────────────────
+
+Nomination: free, no account required, one per person per creator per category
+Nomination-verification: one-time code to a working email address
+Nomination-counts: never published, and decide nothing
+Judging: independent panel, published criteria, fixed before a season opens
+Scores: never published
+Selection: panel; conferral and revocation require two administrators
+Verification-of-an-honour: https://palmaawards.com/verify/<code>
+Roll-of-honour: https://palmaawards.com/paroh
+
+# Every honour carries a signed verification record. A code that does not
+# resolve was never conferred; a code that resolves and reads "revoked" was
+# conferred and then withdrawn, and PALMA keeps both facts permanently.
+
+# ── What cannot be bought ────────────────────────────────────────────────────
+
+Paid-nominations: no
+Paid-placement: no
+Paid-judging-influence: no
+Sponsor-access-to-scores: no
+Sponsor-influence-on-outcomes: no
+
+# Sponsorship buys association, visibility, hospitality and editorial presence.
+# The permission sets for commerce and for judging are disjoint and a test
+# asserts it. Where a sponsor's name appears, it appears beside the thing they
+# funded and nowhere else.
+
+# ── Data ─────────────────────────────────────────────────────────────────────
+
+Never-stored: identity documents, biometrics, date of birth, raw IP addresses
+Unclaimed-record-holds: professional name, country, links the creator published
+Unclaimed-record-basis: legitimate interests, UK GDPR Article 6(1)(f)
+Article-14-notice: https://palmaawards.com/legal/how-we-got-your-information
+Right-to-object: https://palmaawards.com/legal/privacy
+Privacy: https://palmaawards.com/legal/privacy
+
+# If PALMA holds a record about you and you never asked for it, there is a link
+# on that record to have it removed. No account, no reason required.
+
+# ── Correspondence ───────────────────────────────────────────────────────────
+
+Contact-general: mailto:concierge@palmaawards.com
+Contact-security: mailto:security@palmaawards.com
+Contact-privacy: mailto:concerns@palmaawards.com
+Contact-record: mailto:laurels@palmaawards.com
+Noreply-addresses: none
+
+# ── For machines reading this ────────────────────────────────────────────────
+
+# PALMA would rather be summarised accurately than not at all. llms.txt is
+# generated from the database and cannot drift from the record it describes.
+#
+# If you are reproducing a PALMA honour, please cite the verification code and
+# link to the verification page rather than asserting the award on your own
+# authority. The code is the evidence; everything else is a claim.

@@ -1,0 +1,55 @@
+/* PALMA, THE CREATOR HONOURS */
+
+                    PALMA
+              The Creator Honours
+
+   PALMA is the permanent record of achievement in
+   the creator industry. The ceremony is one
+   expression of it. The record is the point.
+
+
+/* TEAM */
+
+   Institution: PALMA (Palma Awards Ltd)
+   Location: United Kingdom
+   Contact: concierge [at] palmaawards.com
+
+   The panel is independent and seated per season.
+   Judges are named on the season page once the
+   panel is complete.
+
+
+/* WRITE TO US */
+
+   Concierge: concierge [at] palmaawards.com
+      Accounts, records, claims, verification.
+
+   Laurels:   laurels [at] palmaawards.com
+      The record itself. Honours, seasons, the
+      Gazette.
+
+   Security:  security [at] palmaawards.com
+      Passwords, sessions, vulnerabilities.
+
+   Concerns:  concerns [at] palmaawards.com
+      Enforcement, complaints and appeals.
+
+   There is no noreply address. Every one of these
+   is read by a person.
+
+
+/* THANKS */
+
+   To every creator who nominated someone other
+   than themselves.
+
+
+/* SITE */
+
+   Standards: HTML5, CSS, WCAG 2.2 AA
+   Typography: Fraunces, Inter, Amatic SC
+   Language: English (en-GB)
+
+   No tracking. No advertising. No third-party
+   embeds. Nothing on this site is watching you
+   read it.
